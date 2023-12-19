@@ -1,0 +1,30 @@
+name: Go
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.18
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Deploy to GitHub Pages
+      run: |
+       go_server_name="./server"
+       ./$go_server_name &
+
+    - name: Render Home Page
+      run: curl http://localhost:8000 
