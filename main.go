@@ -20,8 +20,33 @@ type responsePayload struct {
 	TimeNs       int64   `json:"time_ns"`
 }
 
+const htmlResponse = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Go Server</title>
+  <style>
+    body {
+      background-color: #333; /* Dark background color */
+      color: #fff; /* Text color */
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20% 0;
+    }
+    h1 {
+      color: #00ff00; /* Green heading color */
+    }
+  </style>
+</head>
+<body>
+  <h1>Go server is Live</h1>
+</body>
+</html>
+`
+
 func main() {
 	// Register two HTTP endpoints with the server
+	http.HandleFunc("/", home)
 	http.HandleFunc("/process-single", processSingle)
 	http.HandleFunc("/process-concurrent", processConcurrent)
 
@@ -126,4 +151,15 @@ func processConcurrent(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func home(w http.ResponseWriter, r *http.Request) {
+	// Check if the HTTP method is GET
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(htmlResponse))
 }
